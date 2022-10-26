@@ -1,1 +1,114 @@
+/* ========================================
+ *
+ * Copyright YOUR COMPANY, THE YEAR
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF your company.
+ *
+ * ========================================
+*/
+#include "project.h"
+#include <stdbool.h>
+#include <time.h>
+const AfstandMellemDioder = 5;
+const MultiplikationsFaktor = 100/AfstandMellemDioder;
+const SpændingsdelerKonstant = 90;
+const N = 8;
+bool AffyrKlar = false;
+bool ProjektilDetekteret = false;
+bool ÅbenThyristor = false;
+bool LadeStatusKlar = false;
+bool AffyringsStatusKlar = false;
+
+
+void Affyringsdelay(int AntalSekunder)
+{
+    for (pin_x() > 100)//mV
+    {
+    int AffyringsDelay = 3000*AntalSekunder;
+    
+    clock_t StartTidsMaaling = clock();
+    
+    while(clock() < StartTidsMaaling + AffyringsDelay)
+    {
+        ;
+    }
+    AffyrKlar = true;
+    reset clock();//kan godt være den skal placeres andetsteds, muligvis affyrings interrupt
+    }
+}
+void Projektildetekteret()
+{
+    if(FotoDiodeSpænding > 100)//100 mV
+    {
+        ProjektilDetekteret = false;
+    }
+    else
+    {
+        ProjektilDetekteret = true;
+    }
+}
+void Affyringsstatus()
+{
+    if ((ProjektilDetekteret && LadeStatusKlar) == true)
+    {
+        CharLCD_PosPrintString(0u,2u,"Launch: Ready");
+    }
+    else
+    {
+        CharLCD_PosPrintString(0u,2u,"Launch: Not Ready");
+    }
+}
+CY_ISR(ISR_Timer_rxd)
+{
+    if (HastighedsMaalingStart < 2500)//Fotodiode 1, 2500=2.5V
+        {
+            StartTimer();
+            
+        }
+        if (HastighedsMaalingSlut < 2500)//Fotodiode 2, 2500=2.5V
+        {
+            StopTimer();
+            int TimerVærdi = StopTimer;
+        }
+        HastighedsMaaling = TimerVærdi*MultiplikationsFaktor;
+}
+CY_ISR(ISR_Affyring_rxd)
+{
+    if ((AffyrKlar && ProjektilDetekteret && LadeStatusKlar) == true)
+    {
+        ÅbenThyristor = true;
+    }
+    else
+    {
+        ÅbenThyristor = false;
+    }
+}
+int main(void)
+{
+    CyGlobalIntEnable; /* Enable global interrupts. */
+    Affyringsdelay();
+    Projektildetekteret();
+    ISR_Timer_rxd();
+    ISR_Affyring_rxd();
+    Affyringsstatus();
+    
+    for(;;)
+    {
+        float KondensatorSpændingDigital = get_adc_result();
+        float KondensatorSpænding = (((KondensatorSpændingDigital*5)/((2^N)-1))*1000)*SpændingsdelerKonstant //V_in=(ADC_result*V_ref)/(2^N-1)
+        if (KondensatorSpænding > 375000)//mV
+        {
+            LadeStatusKlar = true;
+        }
+        else
+        {
+            LadeStatusKlar = false;
+        }
+    }
+}
+
+/* [] END OF FILE */
 
