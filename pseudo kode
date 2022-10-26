@@ -75,7 +75,7 @@ CY_ISR(ISR_Timer_rxd)
         }
         HastighedsMaaling = TimerVærdi*MultiplikationsFaktor;
 }
-CY_ISR(ISR_Affyring_rxd)
+CY_ISR(ISR_Affyr_rxd)
 {
     if ((AffyrKlar && ProjektilDetekteret && LadeStatusKlar) == true)
     {
@@ -92,7 +92,7 @@ int main(void)
     Affyringsdelay();
     Projektildetekteret();
     ISR_Timer_rxd();
-    ISR_Affyring_rxd();
+    ISR_Affyr_rxd();
     Affyringsstatus();
     
     for(;;)
