@@ -16,7 +16,7 @@ const AfstandMellemDioder = 5;
 const MultiplikationsFaktor = 100/AfstandMellemDioder;
 const SpændingsdelerKonstant = 90;
 const N = 8;
-bool AffyrKlar = false;
+bool AftrækkerKlar = false;
 bool ProjektilDetekteret = false;
 bool ÅbenThyristor = false;
 bool LadeStatusKlar = false;
@@ -35,7 +35,7 @@ void Affyringsdelay(int AntalSekunder)
     {
         ;
     }
-    AffyrKlar = true;
+    AftrækkerKlar = true;
     reset clock();//kan godt være den skal placeres andetsteds, muligvis affyrings interrupt
     }
 }
@@ -77,7 +77,7 @@ CY_ISR(ISR_Timer_rxd)
 }
 CY_ISR(ISR_Affyr_rxd)
 {
-    if ((AffyrKlar && ProjektilDetekteret && LadeStatusKlar) == true)
+    if ((AftrækkerKlar && ProjektilDetekteret && LadeStatusKlar) == true)
     {
         ÅbenThyristor = true;
     }
@@ -111,4 +111,3 @@ int main(void)
 }
 
 /* [] END OF FILE */
-
