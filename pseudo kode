@@ -14,13 +14,12 @@
 #include <time.h>
 const AfstandMellemDioder = 5;
 const MultiplikationsFaktor = 100/AfstandMellemDioder;
-const SpændingsdelerKonstant = 90;
+const SpændingsdelerFaktor = 90;
 const N = 8;
 bool AftrækkerKlar = false;
 bool ProjektilDetekteret = false;
 bool ÅbenThyristor = false;
 bool LadeStatusKlar = false;
-bool AffyringsStatusKlar = false;
 
 
 void Affyringsdelay(int AntalSekunder)
@@ -41,7 +40,7 @@ void Affyringsdelay(int AntalSekunder)
 }
 void Projektildetekteret()
 {
-    if(FotoDiodeSpænding > 100)//100 mV
+    if(int FotoDiodeSpænding > 100)//100 mV
     {
         ProjektilDetekteret = false;
     }
@@ -61,19 +60,32 @@ void Affyringsstatus()
         CharLCD_PosPrintString(0u,2u,"Launch: Not Ready");
     }
 }
-CY_ISR(ISR_Timer_rxd)
+void LadeStatus()
 {
-    if (HastighedsMaalingStart < 2500)//Fotodiode 1, 2500=2.5V
+    float KondensatorSpændingDigital = get_adc_result();
+        float KondensatorSpænding = (((KondensatorSpændingDigital*5)/((2^N)-1))*1000)*SpændingsdelerFaktor //V_in=(ADC_result*V_ref)/(2^N-1)
+        if (KondensatorSpænding > 375000)//mV
         {
-            StartTimer();
+            LadeStatusKlar = true;
+        }
+        else
+        {
+            LadeStatusKlar = false;
+        }
+}
+CY_ISR(ISR_Hastighed_rxd)
+{
+    if (int HastighedsMaalingStart < 2500)//Fotodiode 1, 2500mV=2.5V
+        {
+            StartTimer();//Tidsmåling startes
             
         }
-        if (HastighedsMaalingSlut < 2500)//Fotodiode 2, 2500=2.5V
+        if (int HastighedsMaalingSlut < 2500)//Fotodiode 2, 2500mV=2.5V
         {
-            StopTimer();
-            int TimerVærdi = StopTimer;
+            StopTimer();//Tidsmåling sluttes
+            int TimerVærdi = StopTimer;//Værdien hentes fra timer
         }
-        HastighedsMaaling = TimerVærdi*MultiplikationsFaktor;
+        float HastighedsMaaling = TimerVærdi*MultiplikationsFaktor; //værdien ganges op således det fåes i m/s
 }
 CY_ISR(ISR_Affyr_rxd)
 {
@@ -91,22 +103,14 @@ int main(void)
     CyGlobalIntEnable; /* Enable global interrupts. */
     Affyringsdelay();
     Projektildetekteret();
-    ISR_Timer_rxd();
-    ISR_Affyr_rxd();
     Affyringsstatus();
+    LadeStatus()
+    ISR_Hastighed_rxd();
+    ISR_Affyr_rxd();
     
     for(;;)
     {
-        float KondensatorSpændingDigital = get_adc_result();
-        float KondensatorSpænding = (((KondensatorSpændingDigital*5)/((2^N)-1))*1000)*SpændingsdelerKonstant //V_in=(ADC_result*V_ref)/(2^N-1)
-        if (KondensatorSpænding > 375000)//mV
-        {
-            LadeStatusKlar = true;
-        }
-        else
-        {
-            LadeStatusKlar = false;
-        }
+        
     }
 }
 
