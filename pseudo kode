@@ -64,6 +64,7 @@ void LadeStatus()
 {
     float KondensatorSpændingDigital = get_adc_result();
         float KondensatorSpænding = (((KondensatorSpændingDigital*5)/((2^N)-1))*1000)*SpændingsdelerFaktor //V_in=(ADC_result*V_ref)/(2^N-1)
+        //Kondensatorspændingen skal udskrives til LCD
         if (KondensatorSpænding > 375000)//mV
         {
             LadeStatusKlar = true;
