@@ -16,17 +16,18 @@ const AfstandMellemDioder = 5;
 const MultiplikationsFaktor = 100/AfstandMellemDioder;
 const SpændingsdelerFaktor = 90;
 const N = 8;
+const AntalSekunder = 3;
 bool AftrækkerKlar = false;
 bool ProjektilDetekteret = false;
 bool ÅbenThyristor = false;
 bool LadeStatusKlar = false;
 
 
-void Affyringsdelay(int AntalSekunder)
+void Affyringsdelay()
 {
     for (pin_x() > 100)//mV
     {
-    int AffyringsDelay = 3000*AntalSekunder;
+    int AffyringsDelay = 1000*AntalSekunder;
     
     clock_t StartTidsMaaling = clock();
     
@@ -76,12 +77,12 @@ void LadeStatus()
 }
 CY_ISR(ISR_Hastighed_rxd)
 {
-    if (int HastighedsMaalingStart < 2500)//Fotodiode 1, 2500mV=2.5V
+    if (int HastighedsMaalingStart < 2500)//Fotodiode 2, 2500mV=2.5V
         {
             StartTimer();//Tidsmåling startes
             
         }
-        if (int HastighedsMaalingSlut < 2500)//Fotodiode 2, 2500mV=2.5V
+        if (int HastighedsMaalingSlut < 2500)//Fotodiode 3, 2500mV=2.5V
         {
             StopTimer();//Tidsmåling sluttes
             int TimerVærdi = StopTimer;//Værdien hentes fra timer
