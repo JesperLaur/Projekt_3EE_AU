@@ -1,0 +1,111 @@
+/* ========================================
+ *
+ * Copyright YOUR COMPANY, THE YEAR
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF your company.
+ *
+ * ========================================
+*/
+#include "project.h"
+#include <stdio.h>
+#include <stdint.h>
+#define TIMER_CLOCK 1000
+
+char buf[128];
+char buf2[128];
+
+int i;
+float Count;
+
+CY_ISR(Hastighed)
+{
+    
+    
+    /*for(;;)
+    {
+        if (CyPins_ReadPin(Knap_0) < 2)
+            {
+                Counter_ReadStatusRegister();
+                Timer_Enable();
+                //Timer_Enable();
+            }
+            else
+            {
+                Timer_Stop();
+                float Count = Counter_ReadCounter();
+                
+                sniprintf(buf, sizeof(buf), "Tid: %.f ms\r\n", Count);
+                UART_PutString(buf);
+                
+                CyDelay(1000);
+            
+            }
+    }*/
+}
+
+/*void KnapDelay()
+{
+    for(;;)
+    {
+        if (CyPins_ReadPin(Knap_0) < 2)
+        {
+            i ++;
+            CyDelay(1);
+        }
+        else
+        {
+            i=0;
+        }
+    }
+}*/
+
+int main(void)
+{
+    CyGlobalIntEnable; /* Enable global interrupts. */
+    
+    UART_Start();
+    UART_PutString("Igang \r\n");
+    Timer_Init();
+    isr_Counter_StartEx(Hastighed);
+    Counter_Start();
+    //KnapDelay();
+    
+
+    for(;;)
+    {
+        if (CyPins_ReadPin(Knap_0) < 2)
+            {
+                
+                Timer_Enable();
+            }
+            else
+            {
+                
+                
+                Count = Counter_ReadCapture();
+                
+                
+                
+                Timer_Stop();
+                
+                Counter_ReadStatusRegister();
+            
+            }
+        snprintf(buf, sizeof(buf), "Tid: %.f ms\r\n", Count);
+        UART_PutString(buf);
+        CyDelay(1000);
+        /*snprintf(buf2, sizeof(buf2), "knap holdt nede i %i ms\r\n", i);
+        UART_PutString(buf2);
+        CyDelay(1000);
+        UART_PutString("Vaerdi af ");
+        int knap = CyPins_ReadPin(Knap_0);
+        snprintf(buf2, sizeof(buf2), "knap: %i\r\n", knap);
+        UART_PutString(buf2);
+        CyDelay(1000);*/
+    }
+}
+
+/* [] END OF FILE */
