@@ -1,0 +1,157 @@
+
+#define SensDist 100 //distance between sensors (100 mm)
+
+float adcResult;
+static float adcInVolts;
+float TimeIns;
+float TimeInms;
+float SpeedCalc;
+bool ProjectileLoaded;
+bool FiringReady;
+
+CY_ISR(SpeedMeasurement)
+{
+    static volatile float timeRead;
+    float frekvens = 1000.0;
+   // char buf[128];
+   // char buf2[128];
+  
+   // UART_PutString("ISR loop aktivt\r\n");
+ 
+    timeRead= 65535-Timer_ReadCapture();
+    TimeIns=((1/frekvens)*timeRead);  //time calculation
+    TimeInms=TimeIns*1000;
+    
+    SpeedCalc=SensDist/TimeIns;
+   /* snprintf(buf, sizeof(buf), "tid: %i s\r\n", time);
+    snprintf(buf2, sizeof(buf2), "timeRead: %f ms\r\n", timeRead);
+    UART_PutString(buf2);
+    UART_PutString(buf); 
+   */
+    
+     
+}
+
+void ProjectileDetection()
+{
+    if (CyPins_ReadPin(Photocell_Projectile_0)<2)
+    {
+        ProjectileLoaded=1;
+    }
+    else
+    {
+        ProjectileLoaded = 0;   
+    }
+}
+
+void FiringStatus()
+{
+    if ((adcInVolts>350) && (ProjectileLoaded==1))
+    {
+        FiringReady=1;
+    }
+    else
+    {
+        FiringReady=0;
+        
+    }
+}
+
+void CapacitorVoltage()
+{
+     ADC_SAR_StartConvert();
+        if (ADC_SAR_IsEndConversion(ADC_SAR_RETURN_STATUS) != 0)
+        {
+            adcResult = ADC_SAR_GetResult16();
+            adcInVolts = ((ADC_SAR_CountsTo_mVolts(adcResult)*100)/1000)*0.94;
+        }
+        ADC_SAR_StopConvert();
+}
+void LCDControl()
+{
+    
+       
+            CharLCD_WriteControl(CharLCD_CLEAR_DISPLAY);
+            CharLCD_PosPrintString(2u,0u, "V_cap=");
+            CharLCD_PosPrintString(2u,16u, "V");
+            CharLCD_Position(2u,11u);
+            CharLCD_PrintNumber(adcInVolts);
+            
+            CharLCD_PosPrintString(1u, 0u, "Tid:");
+            CharLCD_PosPrintString(1u, 16u, "ms");
+            CharLCD_Position(1u, 11u);
+            CharLCD_PrintNumber(TimeInms);
+            
+            
+            CharLCD_PosPrintString(3u, 0u, "Hastighed:");
+            CharLCD_PosPrintString(3u, 16u, "mm/s");
+            CharLCD_Position(3u, 11u);
+            CharLCD_PrintNumber(SpeedCalc);
+            
+            CharLCD_PosPrintString(0u,0u, "Affyring:");
+            
+            if (FiringReady==1)
+            {
+                CharLCD_PosPrintString(0u,11u, "Klar");
+            }
+            else
+            {
+                CharLCD_PosPrintString(0u,11u, "Ikke Klar");
+                
+            }
+            
+            
+            
+            
+        
+    CyDelay(250);   //needed to make sure the LCD does not clear screen before print is achieved 
+    
+    
+    
+}
+
+void Trigger()
+{
+     if ((CyPins_ReadPin(Trigger_0) < 2) && (adcInVolts>0) && (ProjectileLoaded)) //firing loop 
+        {
+            VDAC8_SetValue(0xFF);
+            
+            CyDelay(500);
+            VDAC8_SetValue(0);
+            UART_PutString("firing\r\n");
+        }
+       // int triggerval = CyPins_ReadPin(Trigger_0);
+       // char buf3 [128];
+       // snprintf(buf3, sizeof(buf3), "TriggerVal: %i ms\r\n", triggerval);
+       // UART_PutString(buf3);
+        CyDelay(500);
+}
+int main()
+{
+    
+	CyGlobalIntEnable; /* Enable global interrupts. */
+	
+	I2C_CharLCD_Start();
+	CharLCD_Start();
+    ADC_SAR_Start();
+    UART_Start();
+    Timer_Start();
+    
+    isr_Timer_StartEx(SpeedMeasurement);
+    
+   
+    
+    VDAC8_Start();
+    Opamp_Start();
+    UART_PutString("\r\n");
+	// for the positioning of the cursor, the first position marks the row and the second marks the column)
+	for(;;)
+    {
+	CapacitorVoltage();	
+    LCDControl();
+    Trigger();
+    ProjectileDetection();
+    FiringStatus();
+    
+    }    
+}
