@@ -1,5 +1,9 @@
 
 #define SensDist 100 //distance between sensors (100 mm)
+#define frequency 1000 //timer clock frequency
+
+
+
 
 float adcResult;
 static float adcInVolts;
@@ -12,22 +16,14 @@ bool FiringReady;
 CY_ISR(SpeedMeasurement)
 {
     static volatile float timeRead;
-    float frekvens = 1000.0;
-   // char buf[128];
-   // char buf2[128];
+    
   
-   // UART_PutString("ISR loop aktivt\r\n");
- 
     timeRead= 65535-Timer_ReadCapture();
-    TimeIns=((1/frekvens)*timeRead);  //time calculation
+    TimeIns=((1/frequency)*timeRead);  //time calculation
     TimeInms=TimeIns*1000;
     
-    SpeedCalc=SensDist/TimeIns;
-   /* snprintf(buf, sizeof(buf), "tid: %i s\r\n", time);
-    snprintf(buf2, sizeof(buf2), "timeRead: %f ms\r\n", timeRead);
-    UART_PutString(buf2);
-    UART_PutString(buf); 
-   */
+    SpeedCalc=SensDist/TimeIns; //mm/s
+  
     
      
 }
