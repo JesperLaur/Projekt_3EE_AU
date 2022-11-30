@@ -1,11 +1,6 @@
-lav spole holder om til at kunne indeholde 3' sensor til projektil detekteret.
-beskriv timer i analyse 
-beskriv formeler til hastighedsmåling i analyse 
-beskriv ADC_SAR til design og analyse
 måling af overshoot til ADC
-Lodde til en mere permanent løsning 
-test kode 
+Lodde softwarerelevant hardware til en mere permanent løsning, knap, sensorer og 
+test ny samlet kode 
 beskriv hvilke IO pins der benyttes evt brug psoc creator
 lav beskrivelse af den samlede kode 
 beskrivelse af testkode 
-Skema som delkonklusion til modultest
