@@ -22,7 +22,7 @@ static float ADCInVolts;
 float TimeIns;
 float TimeInms;
 float SpeedCalc;
-bool ProjectileLoaded = 0;
+bool ProjectileLoaded;
 bool FiringReady;
 bool ResetRequired = 0;
 
@@ -48,6 +48,10 @@ void ProjectileDetection()
     {
         ProjectileLoaded=1;
        
+    }
+    else
+    {
+        ProjectileLoaded=0;
     }
    
 }
