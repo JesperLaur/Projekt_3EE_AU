@@ -1,14 +1,13 @@
 Test ny samlet kode 
 Måling af overshoot til ADC
 Lodde softwarerelevant hardware til en mere permanent løsning, knap, sensorer og 
-Beskriv hvilke IO pins der benyttes evt brug psoc creator
-Lav beskrivelse af den samlede kode 
-Beskrivelse af testkode 
-Samlet modul test skema
-
 
 Vi skulle ændre implementering: 
 hastighedsmåling. (bool)
 LCD. 
 Affyringsstatus.
 configuration af timer. 
+Beskriv hvilke IO pins der benyttes evt brug psoc creator
+Lav beskrivelse af den samlede kode 
+Beskrivelse af testkode 
+Samlet modul test skema
