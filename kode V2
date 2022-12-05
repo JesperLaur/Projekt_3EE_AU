@@ -1,11 +1,11 @@
 /* ========================================
  *
- * Copyright Simon August Bay, Mathias Morthorst and Jesper Laursen, 2022
+ * Copyright Simon August Bay Jakobsen , Mathias Ellehage Morthorst  and Jesper Laursen, 2022
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
  * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF Simon August Bay, Mathias Morthorst and Jesper Laursen.
+ * WHICH IS THE PROPERTY OF Simon August Bay Jakobsen , Mathias Ellehage Morthorst and Jesper Laursen.
  *
  * ========================================
 */
@@ -25,6 +25,7 @@ float SpeedCalc;
 bool ProjectileLoaded;
 bool FiringReady;
 bool ResetRequired = 0;
+
 
 CY_ISR(SpeedMeasurement)
 {
@@ -47,7 +48,7 @@ void ProjectileDetection()
     if (CyPins_ReadPin(Photocell_Projectile_0)<2)
     {
         ProjectileLoaded=1;
-       
+        
     }
     else
     {
@@ -80,12 +81,30 @@ void FiringStatus()
     }
 }
 
+void Chargetest()
+{
+ if (ProjectileLoaded  ==1)
+{
+        VDAC8_Charge_SetValue(0xFF); //charging starts
+    
+}
+else 
+{
+    VDAC8_Charge_SetValue(0);// turn off charging
+}
+}
+
 void Trigger()
 {
    
      if ((CyPins_ReadPin(Trigger_0) < 2) && (FiringReady==1)) //firing loop 
         {
+           
+            VDAC8_Charge_SetValue(0);// turn off charging
+            
+            CyDelay(50);
             VDAC8_SetValue(0xFF);
+            
             
             CyDelay(500);
             VDAC8_SetValue(0);
@@ -97,28 +116,28 @@ void Trigger()
 
 void LCDControl()
 {
-    
-       
-            CharLCD_WriteControl(CharLCD_CLEAR_DISPLAY);
+            CharLCD_WriteControl(CharLCD_CLEAR_DISPLAY);    //Clear display to erase old data 
             
-            CharLCD_PosPrintString(2u,0u, "V_cap:");
+            // Voltage for the capacitor
+            CharLCD_PosPrintString(2u,0u, "Spaending:");
             CharLCD_PosPrintString(2u,16u, "V");
             CharLCD_Position(2u,11u);
             CharLCD_PrintNumber(ADCInVolts);
             
+            //Time measurement
             CharLCD_PosPrintString(1u, 0u, "Tid:");
             CharLCD_PosPrintString(1u, 16u, "ms");
             CharLCD_Position(1u, 11u);
             CharLCD_PrintNumber(TimeInms);
             
-            
+            //Speed measurement
             CharLCD_PosPrintString(3u, 0u, "Hastighed:");
             CharLCD_PosPrintString(3u, 16u, "mm/s");
             CharLCD_Position(3u, 11u);
             CharLCD_PrintNumber(SpeedCalc);
             
+            //Firing status
             CharLCD_PosPrintString(0u,0u, "Affyring:");
-            
             if (FiringReady==1)
             {
                 CharLCD_PosPrintString(0u,11u, "Klar");
@@ -134,12 +153,8 @@ void LCDControl()
                 
                 CharLCD_PosPrintString(0u,11u, "--Reset--")
             }
-            
-            
-            
-            
-        
-    CyDelay(250);   //needed to make sure the LCD does not clear screen before print is achieved 
+             
+             CyDelay(250);   //needed to make sure the LCD does not clear screen before print is achieved 
     
     
     
@@ -156,11 +171,13 @@ int main()
     Timer_Start();
     isr_Timer_StartEx(SpeedMeasurement); 
     VDAC8_Start();
+    VDAC8_Charge_Start();
     Opamp_Start();
     
-	// for the positioning of the cursor, the first position marks the row and the second marks the column)
+	
 	for(;;)
     {
+    //Chargetest();
 	CapacitorVoltage();	
     LCDControl();
     Trigger();
