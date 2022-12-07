@@ -17,28 +17,28 @@
 
 
 
-float ADCResult;
-static float ADCInVolts;
-float TimeIns;
-float TimeInms;
-float SpeedCalc;
-bool ProjectileLoaded;
-bool FiringReady;
-bool ResetRequired = 0;
+float ADCResult;            //Result of ADC
+static float ADCInVolts;    //Calculation of ADC in volt, corrected for voltage divider
+float TimeIns;              //Time passed between tripping of the two speed sensors in seconds
+float TimeInms;             //Time passed between tripping of the two speed sensors in miliseconds
+float SpeedCalc;            //Calculated speed of the projectile
+bool ProjectileLoaded;      //If true, projectile is detected
+bool FiringReady;           //If true, projectile is loaded, ADCInVolts is bigger the 350V and gun has not been fired.
+bool ResetRequired = 0;     //If true, gun has been fired and has to be reset before shooting again. 
 
 
 CY_ISR(SpeedMeasurement)
 {
-    static volatile float TimeRead;
-      float frequency = 100000.0;
+    static volatile float TimeRead;         //Time it has taken the projectile to pass between the two sensors. 
+      float frequency = 100000.0;           //Frequency of the timer clock
   
-    TimeRead= 65535-Timer_ReadCapture();
-    TimeIns=((1/frequency)*TimeRead);  //time calculation
-    TimeInms=TimeIns*1000;
+    TimeRead = 65535-Timer_ReadCapture();   //Top of the counter subtracted with the counter value. 
+    TimeIns = ((1/frequency)*TimeRead);     //Time calculation in seconds
+    TimeInms = TimeIns*1000;                //Time calculated from seconds to miliseconds
     
-    float SensDist = 67.5; //distance between sensors (100 mm)
-    SpeedCalc=SensDist/TimeIns; //mm/s
-    ResetRequired = 1;
+    float SensDist = 67.5;                  //Distance between sensors (67.5 mm)
+    SpeedCalc=SensDist/TimeIns;             //Speed of the projectile, calculated in mm/s
+    ResetRequired = 1;                      //Reset required to fire the gun again
     
      
 }
@@ -60,33 +60,33 @@ void ProjectileDetection()
 
 void CapacitorVoltage()
 {
-     ADC_SAR_StartConvert();
-        if (ADC_SAR_IsEndConversion(ADC_SAR_RETURN_STATUS) != 0)
-        {
-            ADCResult = ADC_SAR_GetResult16();
-            ADCInVolts = ((ADC_SAR_CountsTo_mVolts(ADCResult)*100)/1000)*0.94;
-        }
-        ADC_SAR_StopConvert();
+     ADC_SAR_StartConvert();                                                    //Start ADC conversion
+        if (ADC_SAR_IsEndConversion(ADC_SAR_RETURN_STATUS) != 0)                //Goes into the if loop, if the conversion is going on
+        {                                                                       //Start of if loop
+            ADCResult = ADC_SAR_GetResult16();                                  //Gets the result from the ADC
+            ADCInVolts = ((ADC_SAR_CountsTo_mVolts(ADCResult)*100)/1000)*0.94;  //Calcultes the result into volts, take the voltage divider into account
+        }                                                                       //End of if loop
+        ADC_SAR_StopConvert();                                                  //Stops the ADC conversion
 }
 
 void FiringStatus()
 {
-    if ((ADCInVolts>350) && (ProjectileLoaded==1) && (ResetRequired ==0))
+    if ((ADCInVolts>350) && (ProjectileLoaded==1) && (ResetRequired ==0))       //Goes into if loop, if all requirements are true
     {
-        FiringReady=1;
+        FiringReady=1;                                                          //Gun is ready to be fired
     }
-    else
+    else                                                                        //Alternative loop, if not all requirements are true
     {
-        FiringReady=0;
+        FiringReady=0;                                                          //Gun is not ready to be fired
         
     }
 }
 
 void ChargeControl()
 {
-     if ((ProjectileLoaded  ==1) && (ResetRequired==0))
+     if ((ProjectileLoaded  ==1) && (ResetRequired==0))                         //If the projectile is loaded and the gun has not been fired, it goes into the if loop
     {
-            VDAC8_Charge_SetValue(0xFF); //charging starts
+            VDAC8_Charge_SetValue(0xFF); //charging starts                      //Sends permanent 4.08 V out
         
     }
    
@@ -95,64 +95,61 @@ void ChargeControl()
 void Trigger()
 {
    
-     if ((CyPins_ReadPin(Trigger_0) < 2) && (FiringReady==1)) //firing loop 
+     if ((CyPins_ReadPin(Trigger_0) < 2) && (FiringReady==1))                   //If the voltage trigger pin is 0 and firing ready is true, goes into the if loop
         {
            
-            VDAC8_Charge_SetValue(0);// turn off charging
+            VDAC8_Charge_SetValue(0);                                           //Turns off charging           
+            CyDelay(50);                                                        //Waits for 50 seconds
+           
+            VDAC8_SetValue(0xFF);                                               //Sets the output of Pin0[0] to 4.08 V
+            CyDelay(500);                                                       //Output remains high for 500 ms 
             
-            CyDelay(50);
-            VDAC8_SetValue(0xFF);
-            
-            
-            CyDelay(500);
-            VDAC8_SetValue(0);
+            VDAC8_SetValue(0);                                                  //Sets the output of Pin0[0] back to 0 V
             
         }
-      
-       // CyDelay(500);
 }
 
 void LCDControl()
 {
-            CharLCD_WriteControl(CharLCD_CLEAR_DISPLAY);    //Clear display to erase old data 
+            CharLCD_WriteControl(CharLCD_CLEAR_DISPLAY);                        //Clear display to erase old data 
             
             // Voltage for the capacitor
-            CharLCD_PosPrintString(2u,0u, "Spaending:");
-            CharLCD_PosPrintString(2u,16u, "V");
-            CharLCD_Position(2u,11u);
-            CharLCD_PrintNumber(ADCInVolts);
+            CharLCD_PosPrintString(2u,0u, "Spaending:");                        //Prints the charachters to the screen in the given place
+            CharLCD_PosPrintString(2u,16u, "V");                                //Prints the charachters to the screen in the given place
+            CharLCD_Position(2u,11u);                                           //Sets cursor position to the given position
+            CharLCD_PrintNumber(ADCInVolts);                                    //Prints the value of the variable to the screen
             
             //Time measurement
-            CharLCD_PosPrintString(1u, 0u, "Tid:");
-            CharLCD_PosPrintString(1u, 16u, "ms");
-            CharLCD_Position(1u, 11u);
-            CharLCD_PrintNumber(TimeInms);
+            CharLCD_PosPrintString(1u, 0u, "Tid:");                             //Prints the charachters to the screen in the given place
+            CharLCD_PosPrintString(1u, 16u, "ms");                              //Prints the charachters to the screen in the given place
+            CharLCD_Position(1u, 11u);                                          //Sets cursor position to the given position
+            CharLCD_PrintNumber(TimeInms);                                      //Prints the value of the variable to the screen
             
             //Speed measurement
-            CharLCD_PosPrintString(3u, 0u, "Hastighed:");
-            CharLCD_PosPrintString(3u, 16u, "mm/s");
-            CharLCD_Position(3u, 11u);
-            CharLCD_PrintNumber(SpeedCalc);
+            CharLCD_PosPrintString(3u, 0u, "Hastighed:");                       //Prints the charachters to the screen in the given place
+            CharLCD_PosPrintString(3u, 16u, "mm/s");                            //Prints the charachters to the screen in the given place
+            CharLCD_Position(3u, 11u);                                          //Sets cursor position to the given position
+            CharLCD_PrintNumber(SpeedCalc);                                     //Prints the value of the variable to the screen
             
             //Firing status
-            CharLCD_PosPrintString(0u,0u, "Affyring:");
-            if (FiringReady==1)
+            CharLCD_PosPrintString(0u,0u, "Affyring:");                         //Prints the charachters to the screen in the given place
+            if (FiringReady==1)                                                 //Goes into the if, if requirement is met
             {
-                CharLCD_PosPrintString(0u,11u, "Klar");
+                CharLCD_PosPrintString(0u,11u, "Klar");                         //Prints the charachters to the screen in the given place
             }
-            else
+            else                                                                //Goes into the else, if requirementfor the former if loop, is not met
             {
-                CharLCD_PosPrintString(0u,11u, "Ikke Klar");
+                CharLCD_PosPrintString(0u,11u, "Ikke Klar");                    //Prints the charachters to the screen in the given place
                 
             }
             
-            if (ResetRequired)
+            if (ResetRequired)                                                  //Goes into the if, if requirement is met
             {
                 
-                CharLCD_PosPrintString(0u,11u, "--Reset--")
+                CharLCD_PosPrintString(0u,11u, "--Reset--")                     //Prints the charachters to the screen in the given place
             }
              
-             CyDelay(250);   //needed to make sure the LCD does not clear screen before print is achieved 
+             CyDelay(250);   //Waits to make sure the LCD does not clear screen before print is achieved 
     
     
     
@@ -161,27 +158,27 @@ void LCDControl()
 int main()
 {
     
-	CyGlobalIntEnable; /* Enable global interrupts. */
+	CyGlobalIntEnable; // Enable global interrupts.
 	
-	I2C_CharLCD_Start();
-	CharLCD_Start();
-    ADC_SAR_Start();
-    Timer_Start();
-    isr_Timer_StartEx(SpeedMeasurement); 
-    VDAC8_Start();
-    VDAC8_Charge_Start();
-    Opamp_Start();
-    Opamp_Charge_Start();
+	I2C_CharLCD_Start();                    //Start the LCD component
+	CharLCD_Start();                        //Start the LCD component
+    ADC_SAR_Start();                        //Start the ADC component
+    Timer_Start();                          //Start the timer component
+    isr_Timer_StartEx(SpeedMeasurement);    //Start the ISR Component
+    VDAC8_Start();                          //Start the VDAC8 component (Firing function)
+    VDAC8_Charge_Start();                   //Start the VDAC8 component (Charging function)
+    Opamp_Start();                          //Start the Opamp component (Firing function)
+    Opamp_Charge_Start();                   //Start the Opamp component (Charging Function
     
 	
 	for(;;)
     {
-    ChargeControl();
-	CapacitorVoltage();	
-    LCDControl();
-    Trigger();
-    ProjectileDetection();
-    FiringStatus();
+    ChargeControl();                        //Include the ChargeControl codeblock
+	CapacitorVoltage();	                    //Include the CapacitorVoltage codeblock
+    LCDControl();                           //Include the LCDControl codeblock
+    Trigger();                              //Include the Trigger codeblock
+    ProjectileDetection();                  //Include the ProjectileDetection codeblock
+    FiringStatus();                         //Include the FiringStatus codeblock
     
     }    
 }
