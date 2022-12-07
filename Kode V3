@@ -1,0 +1,187 @@
+/* ========================================
+ *
+ * Copyright Simon August Bay Jakobsen , Mathias Ellehage Morthorst  and Jesper Laursen, 2022
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF Simon August Bay Jakobsen , Mathias Ellehage Morthorst and Jesper Laursen.
+ *
+ * ========================================
+*/
+#include <project.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+
+
+
+float ADCResult;
+static float ADCInVolts;
+float TimeIns;
+float TimeInms;
+float SpeedCalc;
+bool ProjectileLoaded;
+bool FiringReady;
+bool ResetRequired = 0;
+
+
+CY_ISR(SpeedMeasurement)
+{
+    static volatile float TimeRead;
+      float frequency = 100000.0;
+  
+    TimeRead= 65535-Timer_ReadCapture();
+    TimeIns=((1/frequency)*TimeRead);  //time calculation
+    TimeInms=TimeIns*1000;
+    
+    float SensDist = 67.5; //distance between sensors (100 mm)
+    SpeedCalc=SensDist/TimeIns; //mm/s
+    ResetRequired = 1;
+    
+     
+}
+
+void ProjectileDetection()
+{
+    
+    if (CyPins_ReadPin(Photocell_Projectile_0)<2)
+    {
+        ProjectileLoaded=1;
+        
+    }
+    else
+    {
+        ProjectileLoaded=0;
+    }
+   
+}
+
+void CapacitorVoltage()
+{
+     ADC_SAR_StartConvert();
+        if (ADC_SAR_IsEndConversion(ADC_SAR_RETURN_STATUS) != 0)
+        {
+            ADCResult = ADC_SAR_GetResult16();
+            ADCInVolts = ((ADC_SAR_CountsTo_mVolts(ADCResult)*100)/1000)*0.94;
+        }
+        ADC_SAR_StopConvert();
+}
+
+void FiringStatus()
+{
+    if ((ADCInVolts>350) && (ProjectileLoaded==1) && (ResetRequired ==0))
+    {
+        FiringReady=1;
+    }
+    else
+    {
+        FiringReady=0;
+        
+    }
+}
+
+void ChargeControl()
+{
+     if ((ProjectileLoaded  ==1) && (ResetRequired==0))
+    {
+            VDAC8_Charge_SetValue(0xFF); //charging starts
+        
+    }
+   
+}
+
+void Trigger()
+{
+   
+     if ((CyPins_ReadPin(Trigger_0) < 2) && (FiringReady==1)) //firing loop 
+        {
+           
+            VDAC8_Charge_SetValue(0);// turn off charging
+            
+            CyDelay(50);
+            VDAC8_SetValue(0xFF);
+            
+            
+            CyDelay(500);
+            VDAC8_SetValue(0);
+            
+        }
+      
+       // CyDelay(500);
+}
+
+void LCDControl()
+{
+            CharLCD_WriteControl(CharLCD_CLEAR_DISPLAY);    //Clear display to erase old data 
+            
+            // Voltage for the capacitor
+            CharLCD_PosPrintString(2u,0u, "Spaending:");
+            CharLCD_PosPrintString(2u,16u, "V");
+            CharLCD_Position(2u,11u);
+            CharLCD_PrintNumber(ADCInVolts);
+            
+            //Time measurement
+            CharLCD_PosPrintString(1u, 0u, "Tid:");
+            CharLCD_PosPrintString(1u, 16u, "ms");
+            CharLCD_Position(1u, 11u);
+            CharLCD_PrintNumber(TimeInms);
+            
+            //Speed measurement
+            CharLCD_PosPrintString(3u, 0u, "Hastighed:");
+            CharLCD_PosPrintString(3u, 16u, "mm/s");
+            CharLCD_Position(3u, 11u);
+            CharLCD_PrintNumber(SpeedCalc);
+            
+            //Firing status
+            CharLCD_PosPrintString(0u,0u, "Affyring:");
+            if (FiringReady==1)
+            {
+                CharLCD_PosPrintString(0u,11u, "Klar");
+            }
+            else
+            {
+                CharLCD_PosPrintString(0u,11u, "Ikke Klar");
+                
+            }
+            
+            if (ResetRequired)
+            {
+                
+                CharLCD_PosPrintString(0u,11u, "--Reset--")
+            }
+             
+             CyDelay(250);   //needed to make sure the LCD does not clear screen before print is achieved 
+    
+    
+    
+}
+
+int main()
+{
+    
+	CyGlobalIntEnable; /* Enable global interrupts. */
+	
+	I2C_CharLCD_Start();
+	CharLCD_Start();
+    ADC_SAR_Start();
+    Timer_Start();
+    isr_Timer_StartEx(SpeedMeasurement); 
+    VDAC8_Start();
+    VDAC8_Charge_Start();
+    Opamp_Start();
+    Opamp_Charge_Start();
+    
+	
+	for(;;)
+    {
+    ChargeControl();
+	CapacitorVoltage();	
+    LCDControl();
+    Trigger();
+    ProjectileDetection();
+    FiringStatus();
+    
+    }    
+}
