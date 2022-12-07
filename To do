@@ -3,7 +3,6 @@ hastighedsmåling. (bool)
 LCD. 
 Affyringsstatus.
 configuration af timer. 
-Lav beskrivelse af den samlede kode 
 Beskrivelse af testkode 
 Samlet implementerings test skema
 beskriv ladestyring i implementering 
@@ -15,4 +14,3 @@ trigger kode (ny ting til ladestyring)
 hastighedsmåling, ny afstand 
 Opbygning af reflektionsprint, fotodiode osv. skal evt. ligge under hardware
 
-kommmentering og renskrivning af koden. 
