@@ -10,11 +10,17 @@ Der skal indsættes nyt billede til kondesatorspænding med spændingsdeler.
 Skal være med i rapporten (tjekkes til inden aflevering):
 knap med tre sekunders delay skal droppes i design. 
 
+
+Accepttest:
+tilføje krav 1.9 - kan ikke oplade uden projektil
+
 HW design
 - opdater figur af multisim
 - Beskriv hvirvelstrømme 
 - opdater spændingdeler beregning osv. 
 - opdater arkitektur fase 
+- solid state relæet skal beskrives
+
 
 Fremtidigt arbejde
 - Effektmodstand mellem kondensatorbanken og spændingsdeler, for at fjerne støj.
