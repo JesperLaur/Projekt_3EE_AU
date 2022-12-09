@@ -1,26 +1,30 @@
-Vi skulle ændre implementering: 
+SW:
 
 Samlet integrations test opstilling
-Test og dokumenter om PsOC'en måler korrekt spænding over kondensatoren
+Test og dokumenter om PsOC'en måler korrekt spænding over kondensatoren 
+Nye modul test til alle kode moduler
 Opbygning af reflektionsprint, fotodiode osv. skal evt. ligge under hardware
 
 Analyse:
-Der skal indsættes nyt billede til kondesatorspænding med spændingsdeler.
 
 Skal være med i rapporten (tjekkes til inden aflevering):
-knap med tre sekunders delay skal droppes i design. 
-
-
-Accepttest:
-tilføje krav 1.9 - kan ikke oplade uden projektil
-
+- fremtidig arbejde
+- diskussion
+- processbeskrivelse 
+- indledning/abstract
+- forord
 HW design
 - opdater figur af multisim
 - Beskriv hvirvelstrømme 
-- opdater spændingdeler beregning osv. 
-- opdater arkitektur fase 
+
 - solid state relæet skal beskrives (måske analyse)
 
 
 Fremtidigt arbejde
 - Effektmodstand mellem kondensatorbanken og spændingsdeler, for at fjerne støj.
+
+generelt:
+- use case opdatering 
+- integrationstest HW 
+
+
