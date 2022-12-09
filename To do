@@ -8,10 +8,7 @@ Opbygning af reflektionsprint, fotodiode osv. skal evt. ligge under hardwareyrin
 Modultest:
 - Aftrækker
 - Hastighedsmåling
-- ADC
-- Projektil detekteret
 - Ladestyring
-- LCD
 - Affyringsstatus
 
 Analyse:
