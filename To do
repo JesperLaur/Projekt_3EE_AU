@@ -3,7 +3,16 @@ SW:
 Samlet integrations test opstilling
 Test og dokumenter om PsOC'en måler korrekt spænding over kondensatoren 
 Nye modul test til alle kode moduler
-Opbygning af reflektionsprint, fotodiode osv. skal evt. ligge under hardware
+Opbygning af reflektionsprint, fotodiode osv. skal evt. ligge under hardwareyring
+
+Modultest:
+- Aftrækker
+- Hastighedsmåling
+- ADC
+- Projektil detekteret
+- Ladestyring
+- LCD
+- Affyringsstatus
 
 Analyse:
 
