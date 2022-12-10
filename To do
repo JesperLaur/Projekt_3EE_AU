@@ -1,14 +1,15 @@
 SW:
-Begrundelse for at droppe krav 1.2.3. bør gøres i arkitektur eller design. bliver beskrevet i afsnit 2.1.4 - bilag 3, tjek at alle er enige 
+Begrundelse for at droppe krav 1.2.3. bør gøres i arkitektur eller design. 
 Samlet integrations test opstilling
 Opbygning af reflektionsprint, fotodiode osv. skal evt. ligge under hardware
 
-Modultest:
+Modultest samt beskrivelser heraf:
 - Aftrækker
 - Hastighedsmåling
 - Affyringsstatus
 
 Analyse:
+- gennemlæs og godkend
 
 Skal være med i rapporten (tjekkes til inden aflevering):
 - fremtidig arbejde
@@ -16,11 +17,12 @@ Skal være med i rapporten (tjekkes til inden aflevering):
 - processbeskrivelse 
 - indledning/abstract
 - forord
+- opdatering af figurnumre, tabelnumre, afsnitsnumre og figurtekster. 
+- opdatér bilag 
+
 HW design
-- opdater figur af multisim
 - Beskriv hvirvelstrømme 
 
-- solid state relæet skal beskrives (måske analyse)
 
 
 Fremtidigt arbejde
