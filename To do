@@ -1,5 +1,5 @@
 SW:
-Begrundelse for at droppe krav 1.2.3. bør gøres i arkitektur eller design. 
+Begrundelse for at droppe krav 1.2.3. bør gøres i arkitektur eller design. bliver beskrevet i afsnit 2.1.4 - bilag 3, tjek at alle er enige 
 Samlet integrations test opstilling
 Opbygning af reflektionsprint, fotodiode osv. skal evt. ligge under hardware
 
