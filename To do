@@ -1,12 +1,4 @@
 SW:
-Begrundelse for at droppe krav 1.2.3. bør gøres i arkitektur eller design. - VENT TIL MØDE MED MICHAELA MANDAG
-Samlet integrations test opstilling
-Opbygning af reflektionsprint, fotodiode osv. skal evt. ligge under hardware
-
-- Gennrmlæsning af modultests
-
-Analyse:
-- gennemlæs og godkend
 
 Skal være med i rapporten (tjekkes til inden aflevering):
 - fremtidig arbejde
@@ -20,14 +12,11 @@ Skal være med i rapporten (tjekkes til inden aflevering):
 HW design
 - Beskriv hvirvelstrømme 
 
-
-
 Fremtidigt arbejde
 - Effektmodstand mellem kondensatorbanken og spændingsdeler, for at fjerne støj.
 
 generelt:
 - use case opdatering 
 - integrationstest HW 
-
 
 martin fix sidetal i integrationstest bilag
