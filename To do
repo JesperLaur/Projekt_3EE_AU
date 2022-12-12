@@ -14,6 +14,8 @@ HW design
 
 Fremtidigt arbejde
 - Effektmodstand mellem kondensatorbanken og spændingsdeler, for at fjerne støj.
+- Timer overflow til knap delay
+- Evt. træk 1ms fra hastighedsmåling
 
 generelt:
 - use case opdatering 
