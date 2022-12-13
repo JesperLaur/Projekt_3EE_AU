@@ -10,15 +10,16 @@ Skal være med i rapporten (tjekkes til inden aflevering):
 - opdatér bilag 
 Tjek krav stemmer overens alle steder; Krav spec, rapport og accepttest
 
-HW design
-- Beskriv hvirvelstrømme 
-
-Fremtidigt arbejde
-- Effektmodstand mellem kondensatorbanken og spændingsdeler, for at fjerne støj.
-- Timer overflow til knap delay
-- Evt. træk 1ms fra hastighedsmåling
-- Ny korigerings faktor til ADC
-
-generelt:
-- use case opdatering 
-- integrationstest HW 
+bilag opdatering 
+- analyse 
+- krav spec
+- implementering
+- arkitektur og design
+- software udv. test
+- modultest
+- accepttest 
+- process beskrivelse 
+- simuleringsresultater for spole
+- tesjournal valg af timer 
+- samlet sw test
+- testjounal spændingsdeler* ligger måske i modulttest 
