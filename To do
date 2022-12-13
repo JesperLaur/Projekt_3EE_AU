@@ -16,7 +16,7 @@ Bilag med samlet kode, topdesign og pin configuration
 bilag opdatering 
 - analyse - Tjekket 1 gang af software
 - krav spec - Tjekket 1 gang af software
-- implementering
+- implementering - Tjekket 1 gang af software (ting skal flyttes ud af dokumentet)
 - arkitektur og design - Tjekket 1 gang af software
 - software udv. test
 - modultest
