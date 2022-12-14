@@ -23,3 +23,13 @@ bilag opdatering
 - tesjournal valg af timer - Tjekket 1 gang af software
 - samlet sw test - Tjekket 1 gang af software
 - testjounal spændingsdeler* ligger måske i modulttest 
+
+
+
+
+Diskussion
+I dette afsnit diskuteres fremgangsmåde af henholdsvis krav, hastighedsmåling, tyristor, spole og kondensatorbank. 
+Kravene blev udformet på baggrund af en basal forståelse af systemet. Dette resulterede i, at flere krav ikke kunne realiseres imens flere dækkede over de samme funktioner. Gruppen var ikke gode nok til at holde kravene opdaterede med den nye viden. Samtidigt gik gruppen for ivrigt frem i processen og derved blev overblikket over kravene mistet. 
+Hastighedsmålingen er ved tilbageblik suboptimal, eftersom der senere er opdaget at timeren måler ca. 1 millisekund for meget. Dette har formodentlig resulteret i, at hastighedsmålingen er lavere end den reelle hastighed.
+Tyristoren var problematisk at implementere, idet gruppen ikke havde en god nok fortståelse for, hvordan den virkede. Dette skyldes blandt andet at gruppen ikke var grundige nok i analyse arbejdet. 
+Mange af de fysiske dele af hardwaret blev loddet på flere åbne Veroboards. Her kunne ønske at have lavet dem på et enkelt Veroboard for at mindske forvirringen i systemet og holde mere orden.  
