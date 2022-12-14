@@ -20,9 +20,9 @@ bilag opdatering
 - arkitektur og design - Tjekket 1 gang af software og HW
 - software udv. test - Tjekket 1 gang af software
 - modultest - Tjekket 1 gang af software
-- accepttest 
-- process beskrivelse 
+- accepttest - Tjekket 1 gang af software
+- process beskrivelse - Tjekket 1 gang af software
 - simuleringsresultater for spole
-- tesjournal valg af timer 
+- tesjournal valg af timer - Tjekket 1 gang af software
 - samlet sw test
 - testjounal spændingsdeler* ligger måske i modulttest 
